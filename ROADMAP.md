@@ -14,12 +14,13 @@
 | Hash routing detail pages (`#detail/region/`, `#detail/zone/`, `#detail/river/`) | ✅ |
 | `data/regions.geojson` async fetch architecture (EPA-ready) | ✅ |
 | 280 unit tests / 33 suites, 85 E2E tests | ✅ |
-| README update | ❌ |
+| README update | ✅ |
 | EPA Level III authoritative region polygons | ❌ |
-| Native plant expansion (10+ per region, currently 6) | ❌ |
+| Native plant expansion (10+ per region) | ✅ |
 | Invasive species warnings per region | ❌ |
 | Seasonal planting calendar per zone | ❌ |
-| City marker expansion (30+ cities, currently 21) | ❌ |
+| City marker expansion (30+ cities — 34 total) | ✅ |
+| NE Upland / NE Coastal legend entries | ❌ |
 
 ---
 
@@ -231,6 +232,28 @@ const PLANTING_CALENDAR = {
 - New unit test suite; 1–2 new E2E tests
 
 **Sources:** Old Farmer's Almanac (by zone), USDA PHZM zone definitions
+
+---
+
+## Issue 7 — NE Upland / NE Coastal legend entries
+
+**Branch:** `feat/ne-legend-entries`  
+**Label:** `enhancement`  
+**Scope:** `map.js` (legend config), `style.css` (legend colors), `tests/e2e/test_legend_toggle.py`
+
+**What:** NE Upland and NE Coastal regions render as shaded polygons on the map but have no named rows in the legend toggle panel. Add legend entries so users can identify and toggle these two regions independently.
+
+**Context:** The EPA pipeline (Issue 2) replaces polygon *boundaries* only — it does not add or remove legend entries. The legend region keys (`blueRidge`, `valleyRidge`, `gulfCoastal`, `piedmont`, `coastal`) are Ridge to Coast labels mapped from EPA L3 codes, not EPA labels. NE Upland and NE Coastal are separate Ridge to Coast region keys (`neUpland`, `neCoastal`) that need the same legend treatment regardless of polygon source.
+
+**Changes needed:**
+- In `map.js`: add `neUpland` and `neCoastal` to the region layer/legend config with display names "NE Upland" and "NE Coastal"
+- In `style.css`: assign distinct fill colors (currently they fall back to a default) — suggest muted teal for NE Upland, muted blue-green for NE Coastal
+- In `tests/e2e/test_legend_toggle.py`: add toggle tests for the two new legend rows
+
+**Acceptance criteria:**
+- Legend panel shows entries for "NE Upland" and "NE Coastal" with matching swatch colors
+- Clicking each legend entry toggles the respective polygon layer on/off
+- All existing 280 unit + 85 E2E tests still pass; new E2E tests added for the two new toggle rows
 
 ---
 
