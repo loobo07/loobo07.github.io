@@ -200,11 +200,11 @@ describe('extract-regions.js Douglas-Peucker simplification', () => {
     assert.ok(src.includes('SIMPLIFY_TOL'), 'Must define SIMPLIFY_TOL');
   });
 
-  it('SIMPLIFY_TOL is between 0.001 and 0.05 degrees (reasonable range for regional display)', () => {
+  it('SIMPLIFY_TOL is between 0.001 and 0.01 degrees (fine enough to preserve small features)', () => {
     const match = src.match(/SIMPLIFY_TOL\s*=\s*([\d.]+)/);
     assert.ok(match, 'SIMPLIFY_TOL must be a numeric constant');
     const val = parseFloat(match[1]);
-    assert.ok(val >= 0.001 && val <= 0.05, `SIMPLIFY_TOL ${val}° should be between 0.001° and 0.05°`);
+    assert.ok(val >= 0.001 && val <= 0.01, `SIMPLIFY_TOL ${val}° should be between 0.001° and 0.01° — 0.005° dropped 38% of features`);
   });
 
   it('implements rdp() (Ramer-Douglas-Peucker) function', () => {
@@ -268,19 +268,37 @@ describe('extract-regions.js L3_TO_REGION mapping', () => {
     assert.equal(L3_TO_REGION['69'], 'valleyRidge');
   });
 
-  it('maps Piedmont codes (45, 64, 59) to piedmont', () => {
+  it('maps Piedmont codes (45, 64) to piedmont', () => {
     assert.equal(L3_TO_REGION['45'], 'piedmont');
     assert.equal(L3_TO_REGION['64'], 'piedmont');
-    assert.equal(L3_TO_REGION['59'], 'piedmont');
   });
 
-  it('maps NE Highland codes (58, 84) to neUpland', () => {
+  it('maps NE Highland codes (58, 82) to neUpland', () => {
     assert.equal(L3_TO_REGION['58'], 'neUpland');
-    assert.equal(L3_TO_REGION['84'], 'neUpland');
+    assert.equal(L3_TO_REGION['82'], 'neUpland');
   });
 
-  it('maps Mixed Wood Plains code (83) to neCoastal', () => {
-    assert.equal(L3_TO_REGION['83'], 'neCoastal');
+  it('maps Northeastern Coastal Zone code (59) to neCoastal', () => {
+    assert.equal(L3_TO_REGION['59'], 'neCoastal');
+  });
+
+  it('maps Eastern Great Lakes Lowlands code (83) to greatLakes (not neCoastal)', () => {
+    assert.equal(L3_TO_REGION['83'], 'greatLakes');
+  });
+
+  it('maps Atlantic Coastal Pine Barrens code (84) to coastal (not neUpland)', () => {
+    assert.equal(L3_TO_REGION['84'], 'coastal');
+  });
+
+  it('maps North Central Appalachians code (77) to valleyRidge (NY Catskills)', () => {
+    assert.equal(L3_TO_REGION['77'], 'valleyRidge');
+  });
+
+  it('does not map phantom codes 78, 79, 80, 81 (absent from EPA shapefile)', () => {
+    assert.equal(L3_TO_REGION['78'], undefined);
+    assert.equal(L3_TO_REGION['79'], undefined);
+    assert.equal(L3_TO_REGION['80'], undefined);
+    assert.equal(L3_TO_REGION['81'], undefined);
   });
 
   it('maps Gulf Coastal codes (73, 74, 75, 76) to gulfCoastal', () => {
@@ -290,8 +308,8 @@ describe('extract-regions.js L3_TO_REGION mapping', () => {
     assert.equal(L3_TO_REGION['76'], 'gulfCoastal');
   });
 
-  it('maps Great Lakes codes (50, 51, 53, 56, 57, 78, 81) to greatLakes', () => {
-    for (const code of ['50', '51', '53', '56', '57', '78', '81']) {
+  it('maps Great Lakes codes (50, 51, 53, 56, 57, 83) to greatLakes', () => {
+    for (const code of ['50', '51', '53', '56', '57', '83']) {
       assert.equal(L3_TO_REGION[code], 'greatLakes', `Code ${code} should map to greatLakes`);
     }
   });
