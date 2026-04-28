@@ -3,175 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-
-  <!-- Content Security Policy
-       Leaflet is vendored in lib/ so script-src requires only 'self' — no CDN domain needed.
-       'unsafe-inline' is required in style-src because Leaflet sets inline style attributes
-       via JavaScript for tile and marker positioning. Scripts are fully locked to 'self' only.
-       Tile images load from CARTO (img-src). connect-src 'self' allows fetch() of same-origin
-       data/hardiness.geojson for the plant hardiness layer.
-       GitHub Pages cannot set HTTP headers so this meta tag is the available CSP mechanism.
-       Note: frame-ancestors is ignored in meta CSP by all browsers (HTTP header only).
-
-       Browser extensions that inject Google Fonts (e.g. Poppins from fonts.gstatic.com) will
-       show a CSP blocked-resource warning in DevTools — this is expected and correct behaviour.
-       Our page does not load Google Fonts; the CSP is working as intended by blocking them.
-
-       Vendored Leaflet 1.9.4 SHA-256 hashes (for audit — files served from self, no integrity= needed):
-         lib/leaflet.js:  sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=
-         lib/leaflet.css: sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=
-  -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://*.basemaps.cartocdn.com data: blob:; connect-src 'self' https://nominatim.openstreetmap.org https://api.weather.gov https://api.inaturalist.org https://waterservices.usgs.gov https://overpass-api.de; manifest-src 'self'; worker-src 'self'; base-uri 'self'; form-action 'none';">
-
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none';">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="theme-color" content="#12171f">
+  <title>Edwin Lobo · loobo07</title>
+  <meta name="description" content="Edwin Lobo (loobo07) — software engineer. Building Ridge to Coast, an interactive ecological map of the Appalachian watershed corridor.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <title>Ridge to Coast</title>
-  <meta name="description" content="Interactive map of the Appalachian watershed corridor — from the mountain ridge through the Piedmont and Fall Line to the Atlantic Coast. Covers geology, USDA Plant Hardiness Zones, native plants, and soil profiles for gardeners, farmers, arborists, and conservationists.">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+    body {
+      background: #12171f;
+      color: #ccc;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
 
-  <!-- Leaflet 1.9.4 — vendored locally, no CDN dependency -->
-  <link rel="stylesheet" href="lib/leaflet.css">
+    .card {
+      max-width: 560px;
+      width: 100%;
+    }
 
-  <link rel="stylesheet" href="style.css">
+    .handle {
+      font-size: 0.85rem;
+      color: #555;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .tagline {
+      color: #888;
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .project {
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.03);
+      margin-bottom: 1.5rem;
+    }
+
+    .project-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #4a7c59;
+      margin-bottom: 0.5rem;
+    }
+
+    .project h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .project p {
+      font-size: 0.9rem;
+      color: #999;
+      line-height: 1.55;
+      margin-bottom: 1.25rem;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature {
+      font-size: 0.8rem;
+      color: #777;
+      padding: 0.25rem 0;
+    }
+
+    .feature::before {
+      content: "· ";
+      color: #4a7c59;
+    }
+
+    .cta {
+      display: inline-block;
+      background: #4a7c59;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.55rem 1.25rem;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    .cta:hover { background: #5a9a6e; }
+
+    .links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .links a {
+      font-size: 0.85rem;
+      color: #555;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .links a:hover { color: #aaa; }
+
+    @media (max-width: 400px) {
+      .features { grid-template-columns: 1fr; }
+      h1 { font-size: 1.6rem; }
+    }
+  </style>
 </head>
 <body>
+  <div class="card">
+    <p class="handle">github.com/loobo07</p>
+    <h1>Edwin Lobo</h1>
+    <p class="tagline">Software engineer · Richmond, VA</p>
 
-  <!-- Detail view — shown when user navigates to /#detail/... — hidden by default -->
-  <div id="detail-view" hidden aria-label="Location detail">
-    <div class="detail-header">
-      <button id="back-btn" class="back-btn" aria-label="Back to map">&#x2190; Back to map</button>
+    <div class="project">
+      <p class="project-label">Featured project</p>
+      <h2>Ridge to Coast</h2>
+      <p>Interactive ecological map of the Appalachian watershed corridor — from the mountain ridge through the Piedmont and Fall Line to the Atlantic Coast. Land literacy for gardeners, farmers, arborists, and conservationists across 22 eastern states.</p>
+      <div class="features">
+        <span class="feature">10 ecological regions</span>
+        <span class="feature">51 corridor cities</span>
+        <span class="feature">USDA hardiness zones</span>
+        <span class="feature">Live frost &amp; flow data</span>
+        <span class="feature">Native plant guides</span>
+        <span class="feature">Seasonal planting calendar</span>
+      </div>
+      <a class="cta" href="https://ridgetocoast.com" rel="noopener noreferrer">Open the map &rarr;</a>
     </div>
-    <div id="detail-content"></div>
-  </div>
 
-  <!-- Map view — the default view -->
-  <div id="map-view">
-
-  <header class="app-header">
-    <h1>Ridge to Coast</h1>
-    <p class="subtitle">Appalachian Ridge &middot; Fall Line &middot; Piedmont &middot; Tidewater &middot; Atlantic Coast</p>
-  </header>
-
-  <div id="map" role="region" aria-label="Interactive map of the Appalachian watershed corridor from mountain ridge through the Fall Line — Peekskill NY, Philadelphia PA, DC, Richmond VA, Raleigh NC, Columbia SC, and Augusta GA to Columbus GA — to the Atlantic Coast"></div>
-
-  <div id="legend" aria-label="Map legend">
-    <div class="legend-header">
-      <h2>Legend</h2>
-      <button id="legend-toggle" aria-label="Toggle legend" aria-expanded="true">&#x25BE;</button>
-    </div>
-    <div id="legend-body">
-      <div class="legend-item">
-        <span class="swatch greatlakes"></span>
-        <span>Great Lakes Basin</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch interiorlowlands"></span>
-        <span>Interior Lowlands / Ohio Valley</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch valleyridge"></span>
-        <span>Valley and Ridge</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch blueridge"></span>
-        <span>Blue Ridge / Appalachians</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch piedmont"></span>
-        <span>Piedmont</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch neupland"></span>
-        <span>New England Upland</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch coastal"></span>
-        <span>Coastal Plain (Tidewater)</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch necoastal"></span>
-        <span>New England Coastal</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch gulfcoastal"></span>
-        <span>Gulf Coastal Plain</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch fallline"></span>
-        <span>Fall Line <em>(approximate)</em></span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch citymarker"></span>
-        <span>Corridor cities</span>
-      </div>
-      <div class="legend-item">
-        <span class="swatch gardens"></span>
-        <span>Community gardens</span>
-      </div>
-
-      <!-- Hardiness zone swatches — shown only when the layer is active -->
-      <div id="hardiness-legend" class="hardiness-legend" hidden>
-        <div class="legend-section-label">Hardiness Zones</div>
-        <div class="zone-swatches"></div>
-      </div>
-
-      <hr>
-      <div class="layer-toggles">
-        <label class="toggle">
-          <input type="checkbox" id="toggle-regions" checked>
-          Region shading
-        </label>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-fallline" checked>
-          Fall line
-        </label>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-cities" checked>
-          City markers
-        </label>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-hardiness">
-          <span id="hardiness-toggle-label">
-            Hardiness zones
-            <span class="loading-spinner" id="hardiness-spinner" hidden aria-hidden="true"></span>
-          </span>
-        </label>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-gardens">
-          Community gardens
-        </label>
-        <p class="layer-hint" id="hardiness-hint" hidden>Region fills switch to outlines when zones are active.</p>
-        <p id="hardiness-error" class="hardiness-error" hidden></p>
-      </div>
-      <p class="attribution-note">
-        &copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap</a>
-        contributors &copy; <a href="https://carto.com/attributions" rel="noopener noreferrer" target="_blank">CARTO</a>
-        &middot; <a href="https://planthardiness.ars.usda.gov" rel="noopener noreferrer" target="_blank">USDA PHZM</a>
-      </p>
+    <div class="links">
+      <a href="https://github.com/loobo07" rel="noopener noreferrer">GitHub</a>
+      <a href="https://github.com/ridgetocoast" rel="noopener noreferrer">ridgetocoast org</a>
+      <a href="https://github.com/ridgetocoast/ridge-to-coast" rel="noopener noreferrer">Source</a>
     </div>
   </div>
-
-  <div id="search-bar" aria-label="Location search">
-    <form id="search-form" role="search">
-      <input type="search" id="search-input" placeholder="Zip code or city&#x2026;"
-             maxlength="100" autocomplete="off" aria-label="Enter zip code or city">
-      <button type="button" id="locate-btn" aria-label="Use my location">&#x1F4CD;</button>
-      <button type="submit" aria-label="Search">&#x2192;</button>
-    </form>
-    <p id="search-status" class="search-status" hidden aria-live="polite"></p>
-  </div>
-
-  </div><!-- end #map-view -->
-
-  <!-- Leaflet 1.9.4 — vendored locally, no CDN dependency -->
-  <script src="lib/leaflet.js"></script>
-
-  <!-- Pure geographic data — no DOM or Leaflet dependency; also used by unit tests -->
-  <script src="lib/geo-data.js"></script>
-
-  <script src="map.js"></script>
 </body>
 </html>
